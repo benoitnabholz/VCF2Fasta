@@ -29,3 +29,20 @@ It has been designed and tested using [Freebayes](https://github.com/freebayes/f
   --Print_all_positions
                         Print all positions corresponding to the reference scaffolds (i.e., from start to end)
 
+-----
+# Example file
+A tool dataset is present in the directory data
+
+
+To use the program:
+``` 
+python3 ./VCF2Fasta.py -q 10 -m 10 -M 100 -R 2 -f data/try.vcf
+```
+
+The output should be
+```
+CM020465.1.fst
+```
+, containing the 30 sequences (two per individuals).
+
+

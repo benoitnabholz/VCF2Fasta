@@ -30,8 +30,8 @@ It has been designed and tested using [Freebayes](https://github.com/freebayes/f
                         Print all positions corresponding to the reference scaffolds (i.e., from start to end)
 
 -----
-# Example file
-A tool dataset is present in the directory data
+## Example file
+A tool dataset is present in the directory data. This dataset have been created using the data of [Delmore et al. 2020](https://elifesciences.org/articles/54462).
 
 
 To use the program:

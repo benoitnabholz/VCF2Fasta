@@ -281,12 +281,12 @@ for line in vcf:
 
 			cov = int(arrInd[covPos])
 			GT = str(arrInd[gtPos]) # genotype information
-						
+
 			if cov < minCoverageThreshold or cov > maxCoverageThreshold:
 				genotypedSeq[seqNumber][pos-1]="N"
 				genotypedSeq[seqNumber+1][pos-1]="N"
 				continue
-						
+	
 			if GT == "0/0":
 				genotypedSeq[seqNumber][pos-1]=REF
 				genotypedSeq[seqNumber+1][pos-1]=REF
@@ -301,8 +301,6 @@ for line in vcf:
 					genotypedSeq[seqNumber][pos-1]="N"
 					genotypedSeq[seqNumber+1][pos-1]="N"
 				
-				
-		
 			if GT == "1/1":
 				if len(ALT) == 3:
 					genotypedSeq[seqNumber][pos-1]=ALT1
@@ -321,19 +319,20 @@ for line in vcf:
 					genotypedSeq[seqNumber][pos-1]="N"
 					genotypedSeq[seqNumber+1][pos-1]="N"
 
-				if GT == "2/2":
-					genotypedSeq[seqNumber][pos-1]=ALT2
+			if GT == "2/2":
+				genotypedSeq[seqNumber][pos-1]=ALT2
+				genotypedSeq[seqNumber+1][pos-1]=ALT2
+
+
+			if GT == "1/2":
+				adPos = findPosInFORMATStr(arrline[8], "AD") #D=AD,Number=R,Type=Integer,Description="Number of observation for each allele 
+				ad = arrInd[adPos].split(",")
+				if int(ad[1]) > minNumberReadsThreshold and int(ad[2]) > minNumberReadsThreshold: # must be supported by at least XX reads
+					genotypedSeq[seqNumber][pos-1]=ALT1
 					genotypedSeq[seqNumber+1][pos-1]=ALT2
-							
-				if GT == "1/2":
-					adPos = findPosInFORMATStr(arrline[8], "AD") #D=AD,Number=R,Type=Integer,Description="Number of observation for each allele 
-					ad = arrInd[adPos].split(",")
-					if int(ad[1]) > minNumberReadsThreshold and int(ad[2]) > minNumberReadsThreshold: # must be supported by at least XX reads
-						genotypedSeq[seqNumber][pos-1]=ALT1
-						genotypedSeq[seqNumber+1][pos-1]=ALT2
-					else:
-						genotypedSeq[seqNumber][pos-1]="N"
-						genotypedSeq[seqNumber+1][pos-1]="N"
+				else:
+					genotypedSeq[seqNumber][pos-1]="N"
+					genotypedSeq[seqNumber+1][pos-1]="N"
 
 # put 'N' in low or high cov sites
 if seqName in Cov:

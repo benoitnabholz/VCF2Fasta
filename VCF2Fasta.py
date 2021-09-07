@@ -86,7 +86,7 @@ for line in fp:
 	if line[0:6] == "#CHROM" and len(nameInd) == 0:
 		arrline = line.split()
 		
-		# individuals are named useing the popphyl format 
+		# individuals are named using the popphyl format 
 		for i in arrline[9:]:
 			indseq1 = i+"|Allele1"
 			indseq2 = i+"|Allele2"
@@ -221,9 +221,9 @@ for line in fp:
 						
 							arrInd = ind.split(":")
 							if arrInd[covPos] == ".":
-						                site.append("N")
-						                site.append("N")
-						                continue
+						        site.append("N")
+						        site.append("N")
+						        continue
 							cov = int(arrInd[covPos])
 							GT = str(arrInd[gtPos]) # genotype information
 					
@@ -266,7 +266,6 @@ for line in fp:
 						if ind == ".": # no reads for this individual
 							site.append("N")
 							site.append("N")
-							IsS = "y"
 							continue
 
 						arrInd = ind.split(":")
@@ -281,13 +280,11 @@ for line in fp:
 						if cov < minCoverageThreshold or cov > maxCoverageThreshold:
 							site.append("N")
 							site.append("N")
-							IsS = "y"
 							continue
 						
 						if GT == "0/0":
 							site.append(REF)
 							site.append(REF)
-							IsS = "y"
 							
 						if GT == "0/1":
 							adPos = findPosInFORMATStr(arrline[8], "AD") #D=AD,Number=R,Type=Integer,Description="Number of observation for each allele 
@@ -295,21 +292,17 @@ for line in fp:
 							if int(ad[0]) > minNumberReadsThreshold and int(ad[1]) > minNumberReadsThreshold: # must be supported by at least XX reads
 								site.append(REF)
 								site.append(ALT)
-								IsS = "y"
 							else:
 								site.append("N")
 								site.append("N")
-								IsS = "y"
 					
 						if GT == "1/1":
 							if len(ALT) == 3:
 								site.append(ALT1)
 								site.append(ALT1)
-								IsS = "y"
 							else:
 								site.append(ALT)
 								site.append(ALT)
-								IsS = "y"
 							
 						if GT == "0/2":
 							adPos = findPosInFORMATStr(arrline[8], "AD") #D=AD,Number=R,Type=Integer,Description="Number of observation for each allele 
@@ -317,16 +310,13 @@ for line in fp:
 							if int(ad[0]) > minNumberReadsThreshold and int(ad[2]) > minNumberReadsThreshold: # must be supported by at least XX reads
 								site.append(REF)
 								site.append(ALT2)
-								IsS = "y"
 							else:
 								site.append("N")
 								site.append("N")
-								IsS = "y"
 								
 						if GT == "2/2":
 							site.append(ALT2)
 							site.append(ALT2)
-							IsS = "y"
 							
 						if GT == "1/2":
 							adPos = findPosInFORMATStr(arrline[8], "AD") #D=AD,Number=R,Type=Integer,Description="Number of observation for each allele 

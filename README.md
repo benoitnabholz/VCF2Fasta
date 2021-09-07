@@ -10,12 +10,15 @@ Both program report all sites *including monomorphic site*.
 
 For using **VCF2Fasta_no_mono.py** you need :
 1) to compute the coverage :
+``` 
 sambamba depth base -L $contig -t 2 Ind.bam  >Ind.cov.txt
+``` 
 sambamba could be found here: https://lomereiter.github.io/sambamba/
 
 2) Extract the postion with a "bad" coverage (either too high or too low) :
+``` 
 extractBadCovPos.py Ind.cov.txt 9 170 >Ind_bad.cov
-
+``` 
 3) Then, I convert the VCF in fasta assuming that the positions that are no in the VCF and have a 
 "correct" coverage are monophormic. Otherwinse, the site is a "N". 
 

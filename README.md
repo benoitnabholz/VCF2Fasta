@@ -28,29 +28,33 @@ mask the one with low quality and 3) mask site with a "bad" coverage.
 *Author:* Benoit Nabholz
 
 --------
-### usage: VCF2Fasta_no_mono.py [-h] [-q QUALITY_THRESHOLD] [-m MIN_COV] [-M MAX_COV] [-R MIN_NUM] [-f VCF_FILE] [--Print_all_positions]
+### usage: usage: VCF2Fasta_no_mono_try.py [-h] [-q QUALITY_THRESHOLD] [-m MIN_COV] [-M MAX_COV] [-R MIN_NUM] [-f MIN_FREQ] [--mask_N] [-v VCF_FILE] [-c COV_FILE] [-r REF_FILE]
 
-
+  -h, --help            show this help message and exit
+  
   -q QUALITY_THRESHOLD, --quality_threshold QUALITY_THRESHOLD
-
   
   -m MIN_COV, --min_cov MIN_COV
                         Minimum coverage to be genotyped
-
-
+                        
   -M MAX_COV, --max_cov MAX_COV
                         Maximum coverage to be genotyped
-
-
+                        
   -R MIN_NUM, --min_num MIN_NUM
                         Minimum number of reads for the alternatice variant allele to be genotyped
-
-  -f MIN_FREQ, --min_freq MIN_FREQ
-                        Minimum frequence of minor allel (expected = 0.5 for one diploid individual
                         
+  -f MIN_FREQ, --min_freq MIN_FREQ
+                        Minimum frequence of minor allel (expected = 0.5 for one diploid individual)
+                        
+  --mask_N              Consider N in reference genome as unknown site for all individuals
+  
   -v VCF_FILE, --vcf_file VCF_FILE
   
-  
+  -c COV_FILE, --cov_file COV_FILE
+                        Coverage (Depth) file
+                        
+  -r REF_FILE, --ref_file REF_FILE
+                        Reference genome (fasta)
 
 --------
 ### usage: VCF2Fasta.py [-h] [-q QUALITY_THRESHOLD] [-m MIN_COV] [-M MAX_COV] [-R MIN_NUM] [-f VCF_FILE] [--Print_all_positions]

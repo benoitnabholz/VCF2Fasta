@@ -48,7 +48,7 @@ mask the one with low quality and 3) mask site with a "bad" coverage.
   -f MIN_FREQ, --min_freq MIN_FREQ
                         Minimum frequence of minor allel (expected = 0.5 for one diploid individual
                         
-  -f VCF_FILE, --vcf_file VCF_FILE
+  -v VCF_FILE, --vcf_file VCF_FILE
   
   
 

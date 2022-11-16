@@ -31,26 +31,37 @@ def findPosInFORMATStr(infoStr, str2ID):
 		return(RETURNPOS)
 	else:
 		return(-999)
-
-
+		
+def minAllFreqCompute(ad):
+	REF_cov=float(ad[0])
+	ALT_cov=float(ad[1])
+	min_all_freq = ALT_cov/(REF_cov+ALT_cov)
+	if min_all_freq > 0.5:
+		min_all_freq = 1-min_all_freq
+	return(min_all_freq)
+	
+	
 parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
 description=textwrap.dedent('''\
 The program convert VCF in Fasta file. 
 It has been designed and tested using Freebayes https://github.com/freebayes/freebayes
 
 If you don't use the option --report-monomorphic then freebayes only output putative SNP or
-structural variant. In this case, I use a different strategy than in the programm VCF2Fasta.py
+structural variant. 
 
-In this case, you can compute the coverage :
+In this case, I use a the following strategy:
+
+1) compute the coverage :
 sambamba depth base -L $contig -t 2 Ind.bam  >Ind.cov.txt
 
-Extract the postion with a wrong coverage either too high or too low :
+2) Extract the postion with a wrong coverage either too high or too low :
 ~/bin/extractBadCovPos.py Ind.cov.txt 9 170 >Ind_bad.cov
 
-Then, I convert the VCF in fasta assuming that the positions that are no in the VCF and have a 
-"correct" coverage are monophormic. Otherwinse, the site is a "N". 
+3) convert the VCF in fasta file assuming that the positions that are not in the VCF and have a 
+"correct" coverage are monophormic. Otherwise, the site is reported as unknown (i.e, with the 
+"N" genotype).
 
-The program 1) create a matrix with the reference sequence, 2) add the SNP with good quality and 
+The program 1) create a sequence with the reference sequence, 2) add the SNP with good quality and 
 mask the one with low quality and 3) mask site with a "bad" coverage.
 
 
@@ -65,6 +76,10 @@ parser.add_argument('-q', "--quality_threshold",  default=10.0, type=float)
 parser.add_argument('-m', '--min_cov', type=int, help="Minimum coverage to be genotyped")
 parser.add_argument('-M', '--max_cov', type=int, help="Maximum coverage to be genotyped")
 parser.add_argument('-R', '--min_num', type=int, help="Minimum number of reads for the alternatice variant allele to be genotyped") # Variant : min. number of reads to be retained 
+parser.add_argument('-f', '--min_freq', type=float, default=0.2, help="Minimum frequence of minor allel (expected = 0.5 for one diploid individual)") 
+
+parser.add_argument('--mask_N', dest='mask_N',  default=False, action="store_true", help="Consider N in reference genome as unknown site for all individuals")
+
 parser.add_argument('-v', '--vcf_file')
 parser.add_argument('-c', '--cov_file', help="Coverage (Depth) file")
 parser.add_argument('-r', '--ref_file', help="Reference genome (fasta)")
@@ -80,9 +95,10 @@ cov_f = open(str(args.cov_file))
 minCoverageThreshold = int(args.min_cov)
 maxCoverageThreshold = int(args.max_cov)
 minNumberReadsThreshold = int(args.min_num)
+minAllFreqThreshold = float(args.min_freq)
 QUALThres = float(args.quality_threshold)
 print("Quality threshold is set to "+str(QUALThres))
-
+mask_N=args.mask_N
 
 # Store fasta file in dictionary
 RefGen = {}
@@ -203,6 +219,11 @@ for line in vcf:
 
 		continue
 
+	if referenceSeq[pos-1] == "N" and mask_N :  # exclude position with "N" in the reference
+		for i in range(0, len(nameSeq)):
+			genotypedSeq[i][pos-1]="N"
+		continue
+
 	covPos = findPosInFORMATStr(arrline[8], "DP") # find coverage position
 	gtPos  = findPosInFORMATStr(arrline[8], "GT")
 
@@ -294,7 +315,10 @@ for line in vcf:
 			if GT == "0/1":
 				adPos = findPosInFORMATStr(arrline[8], "AD") #D=AD,Number=R,Type=Integer,Description="Number of observation for each allele 
 				ad = arrInd[adPos].split(",")
-				if int(ad[0]) > minNumberReadsThreshold and int(ad[1]) > minNumberReadsThreshold: # must be supported by at least minNumberReadsThreshold reads
+				
+				min_all_freq = minAllFreqCompute(ad)
+					
+				if int(ad[0]) > minNumberReadsThreshold and int(ad[1]) > minNumberReadsThreshold and min_all_freq >= minAllFreqThreshold: # must be supported by at least minNumberReadsThreshold reads and coverage higher than min allele freq
 					genotypedSeq[seqNumber][pos-1]=REF
 					genotypedSeq[seqNumber+1][pos-1]=ALT
 				else:
@@ -310,9 +334,12 @@ for line in vcf:
 					genotypedSeq[seqNumber+1][pos-1]=ALT
 							
 			if GT == "0/2":
+
 				adPos = findPosInFORMATStr(arrline[8], "AD") #D=AD,Number=R,Type=Integer,Description="Number of observation for each allele 
 				ad = arrInd[adPos].split(",")
-				if int(ad[0]) > minNumberReadsThreshold and int(ad[2]) > minNumberReadsThreshold: # must be supported by at least XX reads
+				min_all_freq = minAllFreqCompute(ad)
+			
+				if int(ad[0]) > minNumberReadsThreshold and int(ad[2]) > minNumberReadsThreshold and min_all_freq >= minAllFreqThreshold: # must be supported by at least XX reads
 					genotypedSeq[seqNumber][pos-1]=REF
 					genotypedSeq[seqNumber+1][pos-1]=ALT2
 				else:
@@ -327,7 +354,9 @@ for line in vcf:
 			if GT == "1/2":
 				adPos = findPosInFORMATStr(arrline[8], "AD") #D=AD,Number=R,Type=Integer,Description="Number of observation for each allele 
 				ad = arrInd[adPos].split(",")
-				if int(ad[1]) > minNumberReadsThreshold and int(ad[2]) > minNumberReadsThreshold: # must be supported by at least XX reads
+				min_all_freq = minAllFreqCompute(ad)
+				
+				if int(ad[1]) > minNumberReadsThreshold and int(ad[2]) > minNumberReadsThreshold and min_all_freq >= minAllFreqThreshold: # must be supported by at least XX reads
 					genotypedSeq[seqNumber][pos-1]=ALT1
 					genotypedSeq[seqNumber+1][pos-1]=ALT2
 				else:

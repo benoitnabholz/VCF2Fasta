@@ -2,11 +2,11 @@
 
 It has been designed and tested using [Freebayes](https://github.com/freebayes/freebayes)
 
-### VCF2Fasta.py : works with the option --report-monomorphic of freebayes
+### VCF2Fasta.py : works with the option "--report-monomorphic" of freebayes
 
-### VCF2Fasta_no_mono.py : If you don't use the option --report-monomorphic (*much faster*)
+### VCF2Fasta_no_mono.py : If you don't use the option "--report-monomorphic" of freebayes (*much faster*)
 
-Both program report all sites *including monomorphic site*.
+Both program report all sites *including monomorphic sites*.
 
 For using **VCF2Fasta_no_mono.py** you need :
 1) to compute the coverage :
@@ -45,9 +45,12 @@ mask the one with low quality and 3) mask site with a "bad" coverage.
   -R MIN_NUM, --min_num MIN_NUM
                         Minimum number of reads for the alternatice variant allele to be genotyped
 
-
+  -f MIN_FREQ, --min_freq MIN_FREQ
+                        Minimum frequence of minor allel (expected = 0.5 for one diploid individual
+                        
   -f VCF_FILE, --vcf_file VCF_FILE
-
+  
+  
 
 --------
 ### usage: VCF2Fasta.py [-h] [-q QUALITY_THRESHOLD] [-m MIN_COV] [-M MAX_COV] [-R MIN_NUM] [-f VCF_FILE] [--Print_all_positions]

@@ -28,7 +28,8 @@ mask the one with low quality and 3) mask site with a "bad" coverage.
 *Author:* Benoit Nabholz
 
 --------
-### usage: usage: VCF2Fasta_no_mono_try.py [-h] [-q QUALITY_THRESHOLD] [-m MIN_COV] [-M MAX_COV] [-R MIN_NUM] [-f MIN_FREQ] [--mask_N] [-v VCF_FILE] [-c COV_FILE] [-r REF_FILE]
+
+### usage: VCF2Fasta_no_mono_try.py [-h] [-q QUALITY_THRESHOLD] [-m MIN_COV] [-M MAX_COV] [-R MIN_NUM] [-f MIN_FREQ] [--mask_N] [-v VCF_FILE] [-c COV_FILE] [-r REF_FILE]
 
   -h, --help            show this help message and exit
   
@@ -57,6 +58,7 @@ mask the one with low quality and 3) mask site with a "bad" coverage.
                         Reference genome (fasta)
 
 --------
+
 ### usage: VCF2Fasta.py [-h] [-q QUALITY_THRESHOLD] [-m MIN_COV] [-M MAX_COV] [-R MIN_NUM] [-f VCF_FILE] [--Print_all_positions]
 
 
@@ -83,6 +85,7 @@ mask the one with low quality and 3) mask site with a "bad" coverage.
   -r REF_FILE, --ref_file REF_FILE
                         Reference genome (fasta)
 -----
+
 ## Example file
 A tool dataset is present in the directory data. This dataset have been created using the data of [Delmore et al. 2020](https://elifesciences.org/articles/54462).
 

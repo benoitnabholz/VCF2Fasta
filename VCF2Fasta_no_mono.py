@@ -66,7 +66,7 @@ mask the one with low quality and 3) mask site with a "bad" coverage.
 
 
 Author: Benoit Nabholz
-Github: 
+Github: https://github.com/benoitnabholz/VCF2Fasta
 ''')
 )
 
@@ -76,7 +76,7 @@ parser.add_argument('-q', "--quality_threshold",  default=10.0, type=float)
 parser.add_argument('-m', '--min_cov', type=int, help="Minimum coverage to be genotyped")
 parser.add_argument('-M', '--max_cov', type=int, help="Maximum coverage to be genotyped")
 parser.add_argument('-R', '--min_num', type=int, help="Minimum number of reads for the alternatice variant allele to be genotyped") # Variant : min. number of reads to be retained 
-parser.add_argument('-f', '--min_freq', type=float, default=0.2, help="Minimum frequence of minor allel (expected = 0.5 for one diploid individual)") 
+parser.add_argument('-f', '--min_freq', type=float, default=0.2, help="Minimum frequence of minor allele (expected = 0.5 for one diploid individual)") 
 
 parser.add_argument('--mask_N', dest='mask_N',  default=False, action="store_true", help="Consider N in reference genome as unknown site for all individuals")
 
@@ -232,39 +232,39 @@ for line in vcf:
 		if len(ALT) == 3:  # exlcude three alleles cases
 			for i in range(0, len(nameSeq)):
 				genotypedSeq[i][pos-1]="N"
-			else:
-				for i in range(0, len(nameInd)):
-					seqNumber = i*2 # convert individual number in seq number
+		else:
+			for i in range(0, len(nameInd)):
+				seqNumber = i*2 # convert individual number in seq number
 
-					ind = arrline[i+9]
-					if ind == "." : # no reads for this individual
-						genotypedSeq[seqNumber][pos-1]="N"
-						genotypedSeq[seqNumber+1][pos-1]="N"
-						continue
+				ind = arrline[i+9]
+				if ind == "." : # no reads for this individual
+					genotypedSeq[seqNumber][pos-1]="N"
+					genotypedSeq[seqNumber+1][pos-1]="N"
+					continue
 						
-					arrInd = ind.split(":")
-					if arrInd[covPos] == ".":
-						genotypedSeq[seqNumber][pos-1]="N"
-						genotypedSeq[seqNumber+1][pos-1]="N"
-						continue
+				arrInd = ind.split(":")
+				if arrInd[covPos] == ".":
+					genotypedSeq[seqNumber][pos-1]="N"
+					genotypedSeq[seqNumber+1][pos-1]="N"
+					continue
 
-					cov = int(arrInd[covPos])
-					GT = str(arrInd[gtPos]) # genotype information
+				cov = int(arrInd[covPos])
+				GT = str(arrInd[gtPos]) # genotype information
 					
-					if cov < minCoverageThreshold or cov > maxCoverageThreshold:
-						genotypedSeq[seqNumber][pos-1]="N"
-						genotypedSeq[seqNumber+1][pos-1]="N"
-						continue
+				if cov < minCoverageThreshold or cov > maxCoverageThreshold:
+					genotypedSeq[seqNumber][pos-1]="N"
+					genotypedSeq[seqNumber+1][pos-1]="N"
+					continue
 							
-					if GT == "0/1":
-						genotypedSeq[seqNumber][pos-1]="N"
-						genotypedSeq[seqNumber+1][pos-1]="N"
-					if GT == "0/0":
-						genotypedSeq[seqNumber][pos-1]=REF
-						genotypedSeq[seqNumber+1][pos-1]=REF
-					if GT == "1/1":
-						genotypedSeq[seqNumber][pos-1]="N"
-						genotypedSeq[seqNumber+1][pos-1]="N"
+				if GT == "0/1":
+					genotypedSeq[seqNumber][pos-1]="N"
+					genotypedSeq[seqNumber+1][pos-1]="N"
+				if GT == "0/0":
+					genotypedSeq[seqNumber][pos-1]=REF
+					genotypedSeq[seqNumber+1][pos-1]=REF
+				if GT == "1/1":
+					genotypedSeq[seqNumber][pos-1]="N"
+					genotypedSeq[seqNumber+1][pos-1]="N"
 	else:
 
 		covPos = findPosInFORMATStr(arrline[8], "DP") # find coverage position

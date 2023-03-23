@@ -9,16 +9,25 @@ It has been designed and tested using [Freebayes](https://github.com/freebayes/f
 Both program report all sites *including monomorphic sites*.
 
 For using **VCF2Fasta_no_mono.py** you need :
-1) to compute the coverage :
-``` 
-sambamba depth base -L $contig -t 2 Ind.bam  >Ind.cov.txt
-``` 
-sambamba could be found here: https://lomereiter.github.io/sambamba/
 
-2) Extract the postion with a "bad" coverage (either too high or too low) :
-``` 
+1) to compute the coverage only on good quality bases and mapped reads:
+```
+samtools depth -q 30 -Q 50 Ind.bam  >Ind.cov.txt
+```
+
+2) Extract the postion with a "bad" coverage (either too high or too low, with the threshold >=10x and <170x) :
+```
 extractBadCovPos.py Ind.cov.txt 9 170 >Ind_bad.cov
-``` 
+```
+
+Alternatively, you can use `awk` straigth out of samtools:
+```
+min_cov=10
+max_cov=170
+
+samtools depth -q 30 -Q 30 Ind.bam | awk -v mincov=${min_cov} -v maxcov=${max_cov} '($3> maxcov || $3<mincov){ print $0}' >Ind_bad.cov
+```
+
 3) Then, I convert the VCF in fasta assuming that the positions that are no in the VCF and have a 
 "correct" coverage are monophormic. Otherwinse, the site is a "N". 
 

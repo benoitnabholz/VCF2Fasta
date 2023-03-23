@@ -15,7 +15,7 @@ For using **VCF2Fasta_no_mono.py** you need :
 samtools depth -q 30 -Q 50 Ind.bam  >Ind.cov.txt
 ```
 
-2) Extract the postion with a "bad" coverage (either too high or too low, with the threshold >=10x and <170x) :
+2) Extract the postion with a "bad" coverage (either too high or too low) with the threshold >=10x and <170x in this example :
 ```
 extractBadCovPos.py Ind.cov.txt 9 170 >Ind_bad.cov
 ```

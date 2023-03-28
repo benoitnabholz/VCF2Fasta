@@ -102,9 +102,11 @@ mask_N=args.mask_N
 
 # Store fasta file in dictionary
 RefGen = {}
+RefGenPrinted = {}
 for name, seq in read_fasta(fp):
 	name = name.lstrip(">")
 	RefGen[name] = seq
+	RefGenPrinted[name] = 0
 fp.close()
 print("Ref genome loaded")
 
@@ -150,6 +152,7 @@ count = 0
 
 for line in vcf:
 
+
 	# count number of individuals and store names in array
 	if line[0:6] == "#CHROM" and len(nameInd) == 0:
 		arrline = line.split()
@@ -174,6 +177,9 @@ for line in vcf:
 	REF = str(arrline[3])
 	ALT = str(arrline[4])
 	site = []
+	
+	## record that the contig have been taken into account
+	RefGenPrinted[chromosome] = 1
 	
 	## Create the matrix with reference sequence
 	if seqName == "":
@@ -374,4 +380,36 @@ if seqName in Cov:
 fasta = open(seqName+".fst", "w")
 for i in range(0, len(nameSeq)):
 	print(">"+nameSeq[i], file=fasta)
-	print("".join(genotypedSeq[i]), file=fasta)			
+	print("".join(genotypedSeq[i]), file=fasta)
+	
+	
+# take care of the contig that were not present in the VCF (e.g., contig without SNP)
+for chromosome in RefGenPrinted:
+	if RefGenPrinted[chromosome] == 0:
+
+		## set chromosome name
+		seqName = chromosome
+
+		## Create the matrix with reference sequence
+		referenceSeq = list(RefGen[seqName])
+		genotypedSeq = np.empty((0,len(referenceSeq)))
+		for i in range(0, len(nameSeq)):
+			seq = np.array(referenceSeq, dtype=object)
+			genotypedSeq = np.append(genotypedSeq, [seq], axis=0)
+			
+		# put 'N' in low or high cov sites
+		if seqName in Cov:
+			for bad_pos in Cov[seqName]:
+				for i in range(0, len(nameSeq)):
+					seqNumber = i*2 # convert individual number in seq number
+					genotypedSeq[i][bad_pos-1]="N"
+			
+		# print sequences
+		fasta = open(seqName+".fst", "w")
+		for i in range(0, len(nameSeq)):
+			print(">"+nameSeq[i], file=fasta)
+			print("".join(genotypedSeq[i]), file=fasta)
+
+	
+
+		

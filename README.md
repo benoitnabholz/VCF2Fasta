@@ -76,13 +76,18 @@ options:
   -q QUALITY_THRESHOLD, --quality_threshold QUALITY_THRESHOLD
   
   -v VCF_FILE, --vcf_file VCF_FILE
+  
   -c COV_FILE, --cov_file COV_FILE
                         Coverage (Depth) file
+                        
   -r REF_FILE, --ref_file REF_FILE
                         Reference genome (fasta)
+                        
   -f MIN_FREQ, --min_freq MIN_FREQ
                         Minimum frequence of minor allele (expected = 0.5 for one diploid individual / default = 0.2)
+                        
   -d DN, --dn DN        Keep (--dn 0) or exclude (--dn 1, default) the dn SNP
+  
   --mask_N              Consider "N" in reference genome as unknown site for all individual
 
 --------

@@ -16,6 +16,19 @@ def read_fasta(fp):
 		else:
 			seq.append(line)
 	if name: yield (name, ''.join(seq))
+	
+def minAllFreqCompute(InfoField):
+	info = InfoField.split(";")
+	for i in info:
+		if "AC=" in i:
+			COV=i.split("=")[1].split(",")
+			All1=float(COV[0])
+			All2=float(COV[1])
+			break
+	min_all_freq = All1/(All1+All2)
+	if min_all_freq > 0.5:
+		min_all_freq = 1-min_all_freq
+	return(min_all_freq)
 
 parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
 description=textwrap.dedent('''\
@@ -33,6 +46,7 @@ parser.add_argument('-q', "--quality_threshold",  default=10.0, type=float)
 parser.add_argument('-v', '--vcf_file')
 parser.add_argument('-c', '--cov_file', help="Coverage (Depth) file")
 parser.add_argument('-r', '--ref_file', help="Reference genome (fasta)")
+parser.add_argument('-f', '--min_freq', type=float, default=0.2, help="Minimum frequence of minor allele (expected = 0.5 for one diploid individual)") 
 parser.add_argument('-d', '--dn', default=1 ,type=int, help="Keep (--dn 0) or exclude (--dn 1, default) the dn SNP")
 parser.add_argument('--mask_N', dest='mask_N',  default=False, action="store_true", help="Consider \"N\" in reference genome as unknown site for all individuals")
 
@@ -43,6 +57,7 @@ QUALThres = float(args.quality_threshold)
 fp = open(str(args.ref_file))
 vcf = open(str(args.vcf_file))
 cov_f = open(str(args.cov_file))
+minAllFreqThreshold = float(args.min_freq)
 dn = int(args.dn)
 mask_N=args.mask_N
 
@@ -114,6 +129,8 @@ for line in vcf:
 	Ref = arline[3]
 	Alt = arline[4]
 	pos = int(arline[1])
+	InfoField = arline[7]
+	
 	if len(Alt) > 1:
 		print(line)
 
@@ -152,7 +169,12 @@ for line in vcf:
 		All1[pos-1] = "N"
 		All2[pos-1] = "N"
 		continue
-
+		
+	if  minAllFreqThreshold > minAllFreqCompute(InfoField):
+		All1[pos-1] = "N"
+		All2[pos-1] = "N"
+		continue
+		
 	GT = arline[9].split(":")[0]
 	if GT == "1|0":
 		All1[pos-1] = Alt

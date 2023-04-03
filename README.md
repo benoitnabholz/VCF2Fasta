@@ -6,6 +6,8 @@ It has been designed and tested using [Freebayes](https://github.com/freebayes/f
 
 ### VCF2Fasta_no_mono.py : If you don't use the option "--report-monomorphic" of freebayes (*much faster*)
 
+### VCF2FastaLongShot.py : for the [LongShot](https://github.com/pjedge/longshot) software. To genotype long-reads from ONT technology
+
 Both program report all sites *including monomorphic sites*.
 
 For using **VCF2Fasta_no_mono.py** you need :
@@ -54,7 +56,7 @@ mask the one with low quality and 3) mask site with a "bad" coverage.
                         Minimum number of reads for the alternatice variant allele to be genotyped
                         
   -f MIN_FREQ, --min_freq MIN_FREQ
-                        Minimum frequence of minor allel (expected = 0.5 for one diploid individual)
+                        Minimum frequence of minor allele (expected = 0.5 for one diploid individual / default = 0.2)
                         
   --mask_N              Consider N in reference genome as unknown site for all individuals
   
@@ -65,6 +67,23 @@ mask the one with low quality and 3) mask site with a "bad" coverage.
                         
   -r REF_FILE, --ref_file REF_FILE
                         Reference genome (fasta)
+--------
+###     VCF2FastaLongShot.py [-h] [-q QUALITY_THRESHOLD] [-v VCF_FILE] [-c COV_FILE] [-r REF_FILE] [-f MIN_FREQ] [-d DN] [--mask_N]
+ 
+options:
+  -h, --help            show this help message and exit
+  
+  -q QUALITY_THRESHOLD, --quality_threshold QUALITY_THRESHOLD
+  
+  -v VCF_FILE, --vcf_file VCF_FILE
+  -c COV_FILE, --cov_file COV_FILE
+                        Coverage (Depth) file
+  -r REF_FILE, --ref_file REF_FILE
+                        Reference genome (fasta)
+  -f MIN_FREQ, --min_freq MIN_FREQ
+                        Minimum frequence of minor allele (expected = 0.5 for one diploid individual / default = 0.2)
+  -d DN, --dn DN        Keep (--dn 0) or exclude (--dn 1, default) the dn SNP
+  --mask_N              Consider "N" in reference genome as unknown site for all individual
 
 --------
 

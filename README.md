@@ -70,6 +70,7 @@ bgzip AllWGS_cleaned.vcf
 ```
 
 - correct SNP with multiple base  (SNP being returned with multiple padding bases : https://github.com/freebayes/freebayes/issues/161)
+Using VT https://github.com/atks/vt
 ```
 ~/bin/vt decompose_blocksub AllWGS_cleaned.vcf.gz >AllWGS_cleaned_vt.vcf
 bgzip AllWGS_cleaned_vt.vcf

@@ -14,7 +14,7 @@ For using **VCF2Fasta_no_mono.py** you need :
 
 1) to compute the coverage only on good quality bases and mapped reads:
 ```
-samtools depth -q 30 -Q 50 Ind.bam  >Ind.cov.txt
+samtools depth -a -q 30 -Q 50 Ind.bam  >Ind.cov.txt
 ```
 
 2) Extract the postion with a "bad" coverage (either too high or too low) with the threshold >=10x and <170x in this example :
@@ -37,6 +37,56 @@ The program 1) create a matrix with the reference sequence, 2) add the SNP with 
 mask the one with low quality and 3) mask site with a "bad" coverage.
 
 *Author:* Benoit Nabholz
+
+--------
+### Script to genotype lots of individuals at once using FreeBayes
+
+```
+REFGEN=PATH/TO/REF_GENOME
+export PATH=$PATH:$HOME/softwares/freebayes/scripts/:$HOME/bin/:$HOME/softwares/freebayes/vcflib/scripts/:$HOME/softwares/freebayes/vcflib/bin/:/media/bigvol/benoit/softwares/speedseq/bin/
+```
+
+
+- compute interval with same coverage, exclude sex chromosome
+```
+rm cov.bash
+for chr in $(cat list_chromosomes); do
+echo "samtools depth -r $chr -@ 100 -a *ALLBAM*.bam | awk -F'\t'  '{for(i=3;i<=NF;i++) t+=\$i; print \$1\"\\t\"\$2\"\\t\"t; t=0}' | python2.7 coverage_to_regions.py $REFGEN.fai 1000 >regions_cov_$chr.bed" >>cov.bash
+done
+cat cov.bash | parallel
+
+cat regions_cov_*.bed >regions_cov.bed
+
+rm regions_cov_*.bed
+
+```
+
+- Run Freebayes
+```
+ulimit -n `ulimit -Hn`
+time freebayes-parallel regions_cov.bed 120 -f $REFGEN --use-best-n-alleles 4 -L list_bamAllWGS_cleaned.txt >AllWGS_cleaned.vcf
+
+bgzip AllWGS_cleaned.vcf
+```
+
+- correct SNP with multiple base  (SNP being returned with multiple padding bases : https://github.com/freebayes/freebayes/issues/161)
+```
+~/bin/vt decompose_blocksub AllWGS_cleaned.vcf.gz >AllWGS_cleaned_vt.vcf
+bgzip AllWGS_cleaned_vt.vcf
+
+~/bin/vt uniq AllWGS_cleaned_vt.vcf.gz >tmp && rm AllWGS_cleaned_vt.vcf.gz*
+mv tmp AllWGS_cleaned_vt.vcf && bgzip AllWGS_cleaned_vt.vcf
+tabix AllWGS_cleaned_vt.vcf.gz
+```
+
+- filter vcf and exclude missing data
+```
+vcftools --gzvcf AllWGS_cleaned.vcf.gz --out AllWGS_cleaned_goodSNP_noindel_nosexchr --remove-indels --max-missing 1.0 --max-alleles 2 --minQ 200 --minDP 15 --maxDP 150  --recode --recode-INFO-all
+
+python3 ~/bin/FilterVCF.py -R 3 -f 0.2 -s 37 -v AllWGS_cleaned_goodSNP_noindel_nosexchr.recode.vcf >AllWGS_cleaned_goodSNP_noindel_nosexchr.vcf
+bgzip AllWGS_cleaned_goodSNP_noindel_nosexchr.vcf
+```                   
+
 
 --------
 

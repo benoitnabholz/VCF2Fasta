@@ -115,6 +115,7 @@ bgzip AllWGS_cleaned_goodSNP_noindel_nosexchr.vcf
   
   -c COV_FILE, --cov_file COV_FILE
                         Coverage (Depth) file
+  
   -r REF_FILE, --ref_file REF_FILE
                         Reference genome (fasta)
 

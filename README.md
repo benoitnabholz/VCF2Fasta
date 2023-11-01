@@ -47,7 +47,7 @@ export PATH=$PATH:$HOME/softwares/freebayes/scripts/:$HOME/bin/:$HOME/softwares/
 ```
 
 
-- compute interval with same coverage, exclude sex chromosome
+- compute interval with same coverage
 ```
 rm cov.bash
 for chr in $(cat list_chromosomes); do

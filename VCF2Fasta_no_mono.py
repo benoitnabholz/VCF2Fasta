@@ -243,7 +243,10 @@ for line in vcf:
 				seqNumber = i*2 # convert individual number in seq number
 
 				ind = arrline[i+9]
-				if ind == "." : # no reads for this individual
+				arrInd = ind.split(":")
+				GT = str(arrInd[gtPos]) # genotype information
+
+				if GT == "." : # missing genotype for this individual
 					genotypedSeq[seqNumber][pos-1]="N"
 					genotypedSeq[seqNumber+1][pos-1]="N"
 					continue
@@ -255,7 +258,6 @@ for line in vcf:
 					continue
 
 				cov = int(arrInd[covPos])
-				GT = str(arrInd[gtPos]) # genotype information
 					
 				if cov < minCoverageThreshold or cov > maxCoverageThreshold:
 					genotypedSeq[seqNumber][pos-1]="N"
@@ -295,7 +297,10 @@ for line in vcf:
 			seqNumber = i*2 # convert individual number in seq number
 
 			ind = arrline[i+9]
-			if ind == ".": # no reads for this individual
+			arrInd = ind.split(":")
+			GT = str(arrInd[gtPos]) # genotype information
+
+			if GT == "." : # missing genotype
 				genotypedSeq[seqNumber][pos-1]="N"
 				genotypedSeq[seqNumber+1][pos-1]="N"
 				continue

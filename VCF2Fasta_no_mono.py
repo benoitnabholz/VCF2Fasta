@@ -243,8 +243,12 @@ for line in vcf:
 				seqNumber = i*2 # convert individual number in seq number
 
 				ind = arrline[i+9]
-				arrInd = ind.split(":")
-				GT = str(arrInd[gtPos]) # genotype information
+				
+				if ":" in ind: 
+					arrInd = ind.split(":")
+					GT = str(arrInd[gtPos]) # genotype information
+				else: # ind genotype is simply "."
+					GT = "."
 
 				if GT == "." : # missing genotype for this individual
 					genotypedSeq[seqNumber][pos-1]="N"

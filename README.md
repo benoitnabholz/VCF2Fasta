@@ -36,6 +36,9 @@ samtools depth -q 30 -Q 30 Ind.bam | awk -v mincov=${min_cov} -v maxcov=${max_co
 The program 1) create a matrix with the reference sequence, 2) add the SNP with good quality and 
 mask the one with low quality and 3) mask site with a "bad" coverage.
 
+*Warning:* The VCF should not contain haplotype calls or complex alleles. Please, use `freebayes ... | vcfallelicprimitives -kg >calls.vcf` or `vt decompose_blocksub` (see https://github.com/freebayes/freebayes#normalizing-variant-representation )
+ 
+
 *Author:* Benoit Nabholz
 
 --------
